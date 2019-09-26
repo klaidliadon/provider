@@ -85,8 +85,13 @@ func (a *A) toFields() interface{} {
 	}
 }
 
-func (a *A) MarshalJSON() ([]byte, error) { return json.Marshal(a.toFields()) }
-func (a *A) UnmarshalJSON(v []byte) error { return json.Unmarshal(v, a.toFields()) }
+func (a *A) MarshalJSON() ([]byte, error) { 
+	return json.Marshal(a.toFields())
+}
+
+func (a *A) UnmarshalJSON(v []byte) error { 
+	return json.Unmarshal(v, a.toFields())
+}
 ```
 
 It will use a provider for each field, decoding the following JSON:
@@ -114,8 +119,13 @@ func (b *B) toFields() interface{} {
 	return provider.NewField("b", (*stripped)(b))
 }
 
-func (b *B) MarshalJSON() ([]byte, error) { return json.Marshal(b.toFields()) }
-func (b *B) UnmarshalJSON(v []byte) error { return json.Unmarshal(v, b.toFields()) }
+func (b *B) MarshalJSON() ([]byte, error) {
+	return json.Marshal(b.toFields())
+}
+
+func (b *B) UnmarshalJSON(v []byte) error {
+	return json.Unmarshal(v, b.toFields())
+}
 ```
 
 It will result in a JSON that looks like the following:
