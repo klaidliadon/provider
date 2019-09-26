@@ -34,6 +34,22 @@ URL Provider requires the value to be an URL, will execute the HTTP request and 
 }
 ```
 
+### Create your own provider
+
+You can create your own using the `Provider` interface:
+
+```go
+type Provider interface {
+	Set(data []byte, v interface{}) error
+}
+```
+
+You need to register it with a unique name using:
+
+```go
+func Register(name string, p Provider)
+```
+
 ## Usage
 
 It allows to use helpers in the JSON methods to use the package capabilities. 
