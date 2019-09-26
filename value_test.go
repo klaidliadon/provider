@@ -1,12 +1,10 @@
-package provider_test
+package provider
 
 import (
 	"bytes"
 	"encoding/json"
 	"reflect"
 	"testing"
-
-	"github.com/klaidliadon/provider"
 )
 
 var (
@@ -60,12 +58,12 @@ type A struct {
 
 func (a *A) toFields() interface{} {
 	type A struct {
-		Str *provider.Field `json:"str,omitempty"`
-		Int *provider.Field `json:"int,omitempty"`
+		Str *Field `json:"str,omitempty"`
+		Int *Field `json:"int,omitempty"`
 	}
 	return &A{
-		Str: provider.NewField("str", &a.Str),
-		Int: provider.NewField("int", &a.Int),
+		Str: NewField("str", &a.Str),
+		Int: NewField("int", &a.Int),
 	}
 }
 
@@ -77,7 +75,7 @@ type B A
 
 func (b *B) toFields() interface{} {
 	type stripped B // strips methods, avoids recursion
-	return provider.NewField("b", (*stripped)(b))
+	return NewField("b", (*stripped)(b))
 }
 
 func (b *B) MarshalJSON() ([]byte, error) { return json.Marshal(b.toFields()) }

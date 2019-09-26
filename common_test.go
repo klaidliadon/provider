@@ -1,4 +1,4 @@
-package provider_test
+package provider
 
 import (
 	"bytes"
@@ -7,15 +7,17 @@ import (
 	"reflect"
 	"testing"
 	"time"
-
-	"github.com/klaidliadon/provider"
 )
+
+func TestRegister(t *testing.T) {
+	Register("name", nil)
+}
 
 func TestUnknown(t *testing.T) {
 	type S struct {
 		Field string
 	}
-	v := provider.Value{Value: &S{}}
+	v := Value{Value: &S{}}
 	if err := json.Unmarshal([]byte(`{
 		"provider":"unknown",
 		"value":{"field":"value"}
@@ -33,21 +35,21 @@ func TestUnknown(t *testing.T) {
 	}
 }
 
-type url struct {
+type U struct {
 	Str string `json:"string,omitempty"`
 	Int int    `json:"int,omitempty"`
 }
 
-func (u *url) toFields() interface{} {
-	type stripped url // strips methods, avoids recursion
-	return provider.NewField("a", (*stripped)(u))
+func (u *U) toFields() interface{} {
+	type stripped U // strips methods, avoids recursion
+	return NewField("a", (*stripped)(u))
 }
 
-func (u *url) MarshalJSON() ([]byte, error) { return json.Marshal(u.toFields()) }
-func (u *url) UnmarshalJSON(v []byte) error { return json.Unmarshal(v, u.toFields()) }
+func (u *U) MarshalJSON() ([]byte, error) { return json.Marshal(u.toFields()) }
+func (u *U) UnmarshalJSON(v []byte) error { return json.Unmarshal(v, u.toFields()) }
 
 func TestURL(t *testing.T) {
-	a := url{Str: "banana", Int: 42}
+	a := U{Str: "banana", Int: 42}
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		json.NewEncoder(w).Encode(a)
 	})
@@ -57,13 +59,13 @@ func TestURL(t *testing.T) {
 	}()
 	time.Sleep(time.Millisecond * 100)
 	buff := bytes.Buffer{}
-	if err := json.NewEncoder(&buff).Encode(provider.Value{
-		Provider: provider.URL,
+	if err := json.NewEncoder(&buff).Encode(Value{
+		Provider: URL,
 		Value:    "http://" + address,
 	}); err != nil {
 		t.Fatal(err)
 	}
-	var b url
+	var b U
 	if err := json.NewDecoder(&buff).Decode(&b); err != nil {
 		t.Fatal(err)
 	}

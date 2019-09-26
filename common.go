@@ -3,7 +3,6 @@ package provider
 import (
 	"encoding/json"
 	"fmt"
-	"log"
 	"net/http"
 )
 
@@ -50,7 +49,6 @@ func (u url) Set(data []byte, v interface{}) error {
 	if err := json.Unmarshal(data, &s); err != nil {
 		return err
 	}
-	log.Println("URL", s)
 	resp, err := http.Get(s)
 	if err != nil {
 		return err
